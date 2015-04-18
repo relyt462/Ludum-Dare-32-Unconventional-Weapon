@@ -75,7 +75,9 @@ namespace HackTheWorld
 		HELP,
 		OPTION,
 		FONT,
-		SIZE
+		SIZE,
+		YES,
+		NO
 	}
 
 

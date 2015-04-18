@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HackTheWorld
 {
-	internal class PlayerStats
+	internal class Player
 	{
 		public string Name { get; private set; }
 		public Alignment Align { get; private set; }
@@ -16,10 +16,10 @@ namespace HackTheWorld
 		public Skill[] Skills { get; private set; }
 		private Random rng;
 
-		public PlayerStats(string name, string Alignment)
+		public Player(string name)
 		{
 			Name = name;
-			Align = (Alignment)Enum.Parse(typeof(Alignment), Alignment);
+			Align = Alignment.GREYHAT;
 			GovCont = new List<Contact>();
 			CrimCont = new List<Contact>();
 			BusCont = new List<Contact>();

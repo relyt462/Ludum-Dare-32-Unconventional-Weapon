@@ -67,7 +67,6 @@ namespace HackTheWorld
 
 	abstract class State
 	{
-		private State[] connectedStates;
 		private Command[] validCommands;
 		private CommandParser parser;
 		private ConsoleStyleLabel outputLabel;
@@ -78,7 +77,6 @@ namespace HackTheWorld
 
 	internal class StartScreen : State
 	{
-		private State[] connectedStates;
 		private ConsoleStyleLabel outputLabel;
 		private CommandParser parser;
 		private Command[] validCommands;
@@ -165,23 +163,90 @@ namespace HackTheWorld
 
 	internal class NewGame : State
 	{
-		private State[] connectedStates;
 		private Command[] validCommands;
 		private CommandParser parser;
 		private ConsoleStyleLabel outputLabel;
-		private FiniteStateMachine parent;
+		private string name;
 		public NewGame(ref ConsoleStyleLabel label)
 		{
 			outputLabel = label;
-			validCommands = new Command[] {Command.NEW, Command.CONTINUE, Command.HELP};
+			validCommands = new Command[] {Command.YES, Command.NO};
 			parser = new CommandParser(validCommands);
 			EnterState();
 		}
 		
 		public override void EnterState()
 		{
+			StringBuilder output = new StringBuilder();
+			output.Append("ENTER A NAME: ");
+			outputLabel.writeLine(output.ToString());
+		}
+
+		public override bool ProcessCommand(string cmd, ref State s)
+		{
+			if(name == null)
+			{
+				name = cmd;
+				StringBuilder output = new StringBuilder();
+				output.AppendFormat("IS {0} CORRECT? (Y/N)", name);
+				outputLabel.writeLine(output.ToString());
+				return true;
+			}
+			else
+			{
+				Command c;
+				try
+				{
+					c = parser.ParseCommand(cmd);
+				}catch(CommandException e)
+				{
+					outputLabel.writeLine(e.Message);
+					return false;
+				}
+
+				switch(c)
+				{
+					case Command.YES:
+						s = new MainGame(ref outputLabel, new Player(name));
+						break;
+					case Command.NO:
+						EnterState();
+						name = null;
+						break;
+				}
+				return false;
+			}
+
+
+		}
+		public override void ExitState()
+		{
 			throw new NotImplementedException();
 		}
+	}
+
+	internal class MainGame : State
+	{
+		private State[] connectedStates;
+		private Command[] validCommands;
+		private CommandParser parser;
+		private ConsoleStyleLabel outputLabel;
+		private FiniteStateMachine parent;
+		private Player player;
+		public MainGame(ref ConsoleStyleLabel label, Player p)
+		{
+			outputLabel = label;
+			validCommands = new Command[] {Command.NEW, Command.CONTINUE, Command.HELP};
+			parser = new CommandParser(validCommands);
+			player = p;
+			EnterState();
+		}
+		
+		public override void EnterState()
+		{
+
+		}
+
 		public override bool ProcessCommand(string cmd, ref State s)
 		{
 			throw new NotImplementedException();
