@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 using System.Text.RegularExpressions;
 namespace HackTheWorld
 {
@@ -16,7 +19,7 @@ namespace HackTheWorld
 		public ConsoleStyleLabel() : base()
 		{
 			numLines = 0;
-			maxLines = 5;
+			maxLines = 25;
 		}
 
 		public ConsoleStyleLabel(int maxLines) : base()
@@ -25,6 +28,7 @@ namespace HackTheWorld
 			this.maxLines = maxLines;
 		}
 
+		#region WriteLine
 		public void writeLine(string input)
 		{
 			this.Text += input + Environment.NewLine.ToString();
@@ -69,6 +73,18 @@ namespace HackTheWorld
 		{
 			writeLine(input.ToString());
 		}
+		#endregion
 
+		public void ChangeFont(Font newFont)
+		{
+			this.Font = newFont;
+			maxLines = this.Height / this.FontHeight;
+		}
+
+		public void Clear()
+		{
+			this.Text = "";
+			numLines = 0;
+		}
 	}
 }
