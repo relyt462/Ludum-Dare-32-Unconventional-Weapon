@@ -149,6 +149,10 @@ namespace HackTheWorld
 						}break;
 				}
 			}
+			else
+			{
+				output.Append("INVALID COMMAND");
+			}
 		}
 
 		private void tempTestMultCmds(List<string> parameters, ref StringBuilder output)
