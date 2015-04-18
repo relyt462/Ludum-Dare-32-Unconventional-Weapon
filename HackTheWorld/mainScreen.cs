@@ -22,7 +22,7 @@ namespace HackTheWorld
 		public mainScreen()
 		{
 			InitializeComponent();
-			parser = new CommandParser();
+			parser = new CommandParser(ref this.output);
 		}
 
 		private void textBox1_KeyDown(object sender, KeyEventArgs e)
@@ -62,12 +62,14 @@ namespace HackTheWorld
 		public InterfaceState CurState{ get; private set; }
 		public string[] ValidCommands { get; private set; }
 		private Command[] validCmds;
+		private ConsoleStyleLabel label;
 
-		public CommandParser()
+		public CommandParser(ref ConsoleStyleLabel label)
 		{
+			this.label = label;
 			CurState = InterfaceState.DEFAULT;
-			validCmds = new Command[3];
-			ValidCommands = new string[3];
+			validCmds = new Command[6];
+			ValidCommands = new string[6];
 			for(int i = 0; i < validCmds.Length; i++)
 			{
 				validCmds[i] = (Command) i;
@@ -122,16 +124,40 @@ namespace HackTheWorld
 				case Command.HELL:
 					tempTestMultCmds(paramaters, ref output);
 					return true;
+				case Command.OPTION:
+					options(paramaters, ref output);
+					return true;
 			}
 			return false;
 		}
 
+		private void options(List<string> parameters, ref StringBuilder output)
+		{
+			if(parameters.Count == 4 && ValidCommands.Contains(parameters[1]) && ValidCommands.Contains(parameters[2]))
+			{
+				switch(validCmds[Array.IndexOf(ValidCommands,parameters[1])])
+				{
+					case Command.FONT:
+						{
+							switch(validCmds[Array.IndexOf(ValidCommands,parameters[2])])
+							{
+								case Command.SIZE:
+									label.Font = new Font(label.Font.FontFamily, float.Parse(parameters[3]));
+									break;
+							}
+						}break;
+				}
+			}
+		}
+
 		private void tempTestMultCmds(List<string> parameters, ref StringBuilder output)
 		{
-			if(parameters.Count == 2)
+			if (parameters.Count == 2)
 			{
 				output.Append(parameters[1]);
 			}
+			else
+				output.Append("INVALID COMMAND TRY AGAIN");
 		}
 
 		private bool ChangeState(InterfaceState newState)
@@ -154,6 +180,9 @@ namespace HackTheWorld
 	{
 		EXIT = 0, 
 		HELP = 1,
-		HELL = 2
+		HELL = 2,
+		OPTION = 3,
+		FONT = 4,
+		SIZE = 5
 	}
 }
