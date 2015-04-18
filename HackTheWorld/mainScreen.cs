@@ -81,26 +81,24 @@ namespace HackTheWorld
 			List<int> posCmds = new List<int>();
 			List<string> cmds = cmd.Split(' ').ToList();
 			StringBuilder output = new StringBuilder();
-			if (cmds.Count == 1)
+			if (ValidCommands.Contains(cmds[0]))
 			{
-				if (ValidCommands.Contains(cmds[0]))
+				posCmds.Add(Array.IndexOf(ValidCommands, cmds[0]));
+			}
+			else
+			{
+				Regex cmdSearcher = new Regex("^" + cmds[0] + ".*$");
+				for (int i = 0; i < ValidCommands.Length; i++)
 				{
-					posCmds.Add(Array.IndexOf(ValidCommands, cmds[0]));
-				}
-				else
-				{
-					Regex cmdSearcher = new Regex("^" + cmds[0] + ".*$");
-					for (int i = 0; i < ValidCommands.Length; i++)
-					{
-						if (cmdSearcher.IsMatch(ValidCommands[i]))
-							posCmds.Add(i);
-					}
+					if (cmdSearcher.IsMatch(ValidCommands[i]))
+						posCmds.Add(i);
 				}
 			}
+		
 			
 			if (posCmds.Count == 1)
 			{
-				ProcessCmd(validCmds[posCmds[0]], ref output);
+				ProcessCmd(validCmds[posCmds[0]], cmds,ref output);
 			}
 			else if (posCmds.Count == 0)
 				output.Append("INVALID COMMAND TRY AGAIN");
@@ -110,7 +108,7 @@ namespace HackTheWorld
 			return output.ToString();
 		}
 		
-		private bool ProcessCmd(Command cmdToProcess, ref StringBuilder output)
+		private bool ProcessCmd(Command cmdToProcess,List<string> paramaters, ref StringBuilder output)
 		{
 			switch(cmdToProcess)
 			{
@@ -122,10 +120,18 @@ namespace HackTheWorld
 						output.Append("HELP TEST");
 					return true;
 				case Command.HELL:
-					output.Append("kljadsklf\nljkadf");
+					tempTestMultCmds(paramaters, ref output);
 					return true;
 			}
 			return false;
+		}
+
+		private void tempTestMultCmds(List<string> parameters, ref StringBuilder output)
+		{
+			if(parameters.Count == 2)
+			{
+				output.Append(parameters[1]);
+			}
 		}
 
 		private bool ChangeState(InterfaceState newState)
