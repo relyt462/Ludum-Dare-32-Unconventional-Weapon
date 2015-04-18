@@ -142,7 +142,8 @@ namespace HackTheWorld
 							switch(validCmds[Array.IndexOf(ValidCommands,parameters[2])])
 							{
 								case Command.SIZE:
-									label.Font = new Font(label.Font.FontFamily, float.Parse(parameters[3]));
+									label.ChangeFont(new Font(label.Font.FontFamily, float.Parse(parameters[3])));
+									label.Clear();
 									break;
 							}
 						}break;
