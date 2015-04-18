@@ -13,7 +13,7 @@ namespace HackTheWorld
 {
 	public partial class mainScreen : Form
 	{
-		private CommandParser parser;
+		private FiniteStateMachine fsm;
 		[DllImport("user32.dll")]
 		static extern bool CreateCaret(IntPtr hWnd, IntPtr hBitmap, int nWidth, int nHeight);
 		[DllImport("user32.dll")]
@@ -22,32 +22,34 @@ namespace HackTheWorld
 		public mainScreen()
 		{
 			InitializeComponent();
-			parser = new CommandParser(ref this.output);
+			fsm = new FiniteStateMachine(ref output);
 		}
 
 		private void textBox1_KeyDown(object sender, KeyEventArgs e)
 		{
 			if(e.KeyCode == Keys.Enter)
 			{
-				printText(parser.ParseCommand(inputTextBox.Text));
+				switch (fsm.ProcessCommand(inputTextBox.Text))
+				{
+					case -1:
+						this.Close();
+						break;
+					default:
+						break;
+
+				}
 				inputTextBox.Clear();
 				e.Handled = true;
 				e.SuppressKeyPress = true;
 			}
 
-			if (parser.CurState == InterfaceState.EXIT)
-				this.Close();
+			
 		}
 
 		private void mainScreen_Shown(object sender, EventArgs e)
 		{
 			CreateCaret(inputTextBox.Handle, IntPtr.Zero, 14, inputTextBox.Height);
 			ShowCaret(inputTextBox.Handle);
-		}
-
-		private void printText(string strToPrint)
-		{
-			output.writeLine(strToPrint);
 		}
 
 		private void mainScreen_Activated(object sender, EventArgs e)
@@ -57,137 +59,24 @@ namespace HackTheWorld
 		}
 	}
 
-	internal class CommandParser
-	{
-		public InterfaceState CurState{ get; private set; }
-		public string[] ValidCommands { get; private set; }
-		private Command[] validCmds;
-		private ConsoleStyleLabel label;
-
-		public CommandParser(ref ConsoleStyleLabel label)
-		{
-			this.label = label;
-			CurState = InterfaceState.DEFAULT;
-			validCmds = new Command[6];
-			ValidCommands = new string[6];
-			for(int i = 0; i < validCmds.Length; i++)
-			{
-				validCmds[i] = (Command) i;
-				ValidCommands[i] = validCmds[i].ToString();
-			}
-		}
-
-		public string ParseCommand(string cmd)
-		{
-			cmd = cmd.ToUpper();
-			List<int> posCmds = new List<int>();
-			List<string> cmds = cmd.Split(' ').ToList();
-			StringBuilder output = new StringBuilder();
-			if (ValidCommands.Contains(cmds[0]))
-			{
-				posCmds.Add(Array.IndexOf(ValidCommands, cmds[0]));
-			}
-			else
-			{
-				Regex cmdSearcher = new Regex("^" + cmds[0] + ".*$");
-				for (int i = 0; i < ValidCommands.Length; i++)
-				{
-					if (cmdSearcher.IsMatch(ValidCommands[i]))
-						posCmds.Add(i);
-				}
-			}
-		
-			
-			if (posCmds.Count == 1)
-			{
-				ProcessCmd(validCmds[posCmds[0]], cmds,ref output);
-			}
-			else if (posCmds.Count == 0)
-				output.Append("INVALID COMMAND TRY AGAIN");
-			else
-				output.Append("AMBIGUOUS COMMAND TRY AGAIN");
-
-			return output.ToString();
-		}
-		
-		private bool ProcessCmd(Command cmdToProcess,List<string> paramaters, ref StringBuilder output)
-		{
-			switch(cmdToProcess)
-			{
-				case Command.EXIT:
-					ChangeState(InterfaceState.EXIT);
-					return true;
-				case Command.HELP:
-					if(CurState == InterfaceState.DEFAULT)
-						output.Append("HELP TEST");
-					return true;
-				case Command.HELL:
-					tempTestMultCmds(paramaters, ref output);
-					return true;
-				case Command.OPTION:
-					options(paramaters, ref output);
-					return true;
-			}
-			return false;
-		}
-
-		private void options(List<string> parameters, ref StringBuilder output)
-		{
-			if(parameters.Count == 4 && ValidCommands.Contains(parameters[1]) && ValidCommands.Contains(parameters[2]))
-			{
-				switch(validCmds[Array.IndexOf(ValidCommands,parameters[1])])
-				{
-					case Command.FONT:
-						{
-							switch(validCmds[Array.IndexOf(ValidCommands,parameters[2])])
-							{
-								case Command.SIZE:
-									label.ChangeFont(new Font(label.Font.FontFamily, float.Parse(parameters[3])));
-									label.Clear();
-									break;
-							}
-						}break;
-				}
-			}
-			else
-			{
-				output.Append("INVALID COMMAND");
-			}
-		}
-
-		private void tempTestMultCmds(List<string> parameters, ref StringBuilder output)
-		{
-			if (parameters.Count == 2)
-			{
-				output.Append(parameters[1]);
-			}
-			else
-				output.Append("INVALID COMMAND TRY AGAIN");
-		}
-
-		private bool ChangeState(InterfaceState newState)
-		{
-
-			//Add transitions for states where it is needed
-			CurState = newState;
-			return true;
-		}
-
-	}
 
 	internal enum InterfaceState
 	{
 		DEFAULT = 0,
-		EXIT = -1
+		EXIT = -1,
+		START = 15
 	}
 
 	internal enum Command
 	{
-		EXIT = 0, 
-		HELP = 1,
-		HELL = 2,
-		OPTION = 3,
-		FONT = 4,
-		SIZE = 5
+		NEW,
+		CONTINUE,
+		EXIT,
+		HELP,
+		OPTION,
+		FONT,
+		SIZE
 	}
+
+
 }

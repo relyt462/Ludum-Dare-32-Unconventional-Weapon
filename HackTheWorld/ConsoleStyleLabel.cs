@@ -32,7 +32,8 @@ namespace HackTheWorld
 		public void writeLine(string input)
 		{
 			this.Text += input + Environment.NewLine.ToString();
-			numLines += Regex.Matches(input,"^.*$",RegexOptions.Multiline).Count;
+			int inputLines = Regex.Matches(input,"^.*$",RegexOptions.Multiline).Count;
+			numLines += inputLines;
 			while(numLines > maxLines)
 			{
 				deleteTopLine();

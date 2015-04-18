@@ -41,7 +41,7 @@
 			this.inputTextBox.ForeColor = System.Drawing.Color.LimeGreen;
 			this.inputTextBox.Location = new System.Drawing.Point(0, 504);
 			this.inputTextBox.Name = "inputTextBox";
-			this.inputTextBox.Size = new System.Drawing.Size(479, 30);
+			this.inputTextBox.Size = new System.Drawing.Size(512, 30);
 			this.inputTextBox.TabIndex = 1;
 			this.inputTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
 			// 
@@ -52,7 +52,7 @@
 			this.output.ForeColor = System.Drawing.Color.LimeGreen;
 			this.output.Location = new System.Drawing.Point(0, 0);
 			this.output.Name = "output";
-			this.output.Size = new System.Drawing.Size(479, 504);
+			this.output.Size = new System.Drawing.Size(512, 504);
 			this.output.TabIndex = 2;
 			// 
 			// mainScreen
@@ -60,7 +60,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.WindowText;
-			this.ClientSize = new System.Drawing.Size(479, 534);
+			this.ClientSize = new System.Drawing.Size(512, 534);
 			this.Controls.Add(this.output);
 			this.Controls.Add(this.inputTextBox);
 			this.Name = "mainScreen";

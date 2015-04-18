@@ -46,9 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandParser.cs" />
     <Compile Include="ConsoleStyleLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="FiniteStateMachines.cs" />
+    <Compile Include="Jobs.cs" />
     <Compile Include="mainScreen.cs">
       <SubType>Form</SubType>
     </Compile>
