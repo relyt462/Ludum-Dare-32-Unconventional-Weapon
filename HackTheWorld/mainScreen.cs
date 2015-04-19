@@ -77,7 +77,14 @@ namespace HackTheWorld
 		FONT,
 		SIZE,
 		YES,
-		NO
+		NO,
+		STATISTICS,
+		VIEW,
+		SHOW = VIEW,
+		EASY,
+		MEDIUM,
+		HARD,
+		SAVE
 	}
 
 

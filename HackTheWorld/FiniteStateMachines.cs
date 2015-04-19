@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Text.RegularExpressions;
 namespace HackTheWorld
 {
 	class FiniteStateMachine
@@ -27,6 +28,8 @@ namespace HackTheWorld
 				switch (defParser.ParseCommand(cmd))
 				{
 					case Command.EXIT:
+						if (cmd.Length == 1)
+							return 0;
 						return -1;
 					case Command.OPTION:
 						StringBuilder output = new StringBuilder();
@@ -207,7 +210,7 @@ namespace HackTheWorld
 				switch(c)
 				{
 					case Command.YES:
-						s = new MainGame(ref outputLabel, new Player(name));
+						s = new ChooseDiff(ref outputLabel, name);
 						break;
 					case Command.NO:
 						EnterState();
@@ -225,18 +228,103 @@ namespace HackTheWorld
 		}
 	}
 
-	internal class MainGame : State
+	internal class ChooseDiff : State
 	{
-		private State[] connectedStates;
 		private Command[] validCommands;
 		private CommandParser parser;
 		private ConsoleStyleLabel outputLabel;
-		private FiniteStateMachine parent;
+		private string name;
+		public ChooseDiff(ref ConsoleStyleLabel label, string name)
+		{
+			this.name = name;
+			outputLabel = label;
+			validCommands = new Command[] { Command.EASY, Command.MEDIUM, Command.HARD};
+			parser = new CommandParser(validCommands);
+			EnterState();
+		}
+
+		public override void EnterState()
+		{
+			StringBuilder output = new StringBuilder();
+			output.AppendLine("CHOOSE YOUR DIFFICULTY: ");
+			output.AppendLine("EASY - SCRIPT KIDDIE");
+			output.AppendLine("MEDIUM - ALT MEDIUM");
+			output.AppendLine("HARD - L33T H@XOR");
+			outputLabel.writeLine(output.ToString());
+		}
+
+		public override bool ProcessCommand(string cmd, ref State s)
+		{
+			Difficulty diff;
+			if(Regex.IsMatch("SCRIPT KIDDIE", "^" + cmd + ".*$",RegexOptions.Multiline | RegexOptions.IgnoreCase))
+			{
+				diff = Difficulty.EASY;
+				s = new MainGame(ref outputLabel, new Player(name, diff));
+			}
+			else if (Regex.IsMatch("ALT MEDIUM", "^" + cmd + ".*$", RegexOptions.Multiline | RegexOptions.IgnoreCase))
+			{
+				diff = Difficulty.MEDIUM;
+				s = new MainGame(ref outputLabel, new Player(name, diff));
+			}
+			else if (Regex.IsMatch("L33t H@XOR", "^" + cmd + ".*$", RegexOptions.Multiline | RegexOptions.IgnoreCase))
+			{
+				diff = Difficulty.HARD;
+				s = new MainGame(ref outputLabel, new Player(name, diff));
+			}
+			else
+			{
+				Command c;
+				try
+				{
+					c = parser.ParseCommand(cmd);
+				}catch(CommandException e)
+				{
+					outputLabel.writeLine(e.Message);
+					return false;
+				}
+
+				switch(c)
+				{
+					case Command.EASY:
+						diff = Difficulty.EASY;
+						s = new MainGame(ref outputLabel, new Player(name, diff));
+						break;
+					case Command.MEDIUM:
+						diff = Difficulty.MEDIUM;
+						s = new MainGame(ref outputLabel, new Player(name, diff));
+						break;
+					case Command.HARD:
+						diff = Difficulty.HARD;
+						s = new MainGame(ref outputLabel, new Player(name, diff));
+						break;
+				}
+				return false;
+			}
+			return false;
+		}
+		public override void ExitState()
+		{
+			throw new NotImplementedException();
+		}
+	}
+	internal enum Difficulty
+	{
+		EASY,
+		MEDIUM,
+		HARD
+	}
+
+	internal class MainGame : State
+	{
+		private Command[] validCommands;
+		private CommandParser parser;
+		private ConsoleStyleLabel outputLabel;
 		private Player player;
+		
 		public MainGame(ref ConsoleStyleLabel label, Player p)
 		{
 			outputLabel = label;
-			validCommands = new Command[] {Command.NEW, Command.CONTINUE, Command.HELP};
+			validCommands = new Command[] {Command.STATISTICS, Command.VIEW, Command.HELP, Command.SAVE};
 			parser = new CommandParser(validCommands);
 			player = p;
 			EnterState();
@@ -244,10 +332,34 @@ namespace HackTheWorld
 		
 		public override void EnterState()
 		{
-
+			
 		}
 
 		public override bool ProcessCommand(string cmd, ref State s)
+		{
+			Command c;
+			try
+			{
+				c = parser.ParseCommand(command);
+			}
+			catch (CommandException e)
+			{
+				outputLabel.writeLine(e.Message);
+				return false;
+			}
+
+			switch (c)
+			{
+				case Command.SAVE:
+					player.Save();
+				case Command.HELP:
+					displayHelp();
+					break;
+			}
+			return false;
+		}
+
+		private void displayHelp()
 		{
 			throw new NotImplementedException();
 		}
