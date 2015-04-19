@@ -80,7 +80,7 @@ namespace HackTheWorld
 		NO,
 		STATISTICS,
 		VIEW,
-		SHOW = VIEW,
+		SHOW,
 		EASY,
 		MEDIUM,
 		HARD,
