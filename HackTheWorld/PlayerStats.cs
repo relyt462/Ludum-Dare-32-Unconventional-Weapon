@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -60,14 +61,31 @@ namespace HackTheWorld
 
 		internal void Save()
 		{
-			SaveFileDialog sf = new SaveFileDialog();
-			if (sf.ShowDialog() == DialogResult.OK)
-			{
-				IFormatter f = new BinaryFormatter();
-				Stream s = new FileStream(sf.FileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
-				f.Serialize(s, this);
-				s.Close();
-			}
+			string fileName = Assembly.GetExecutingAssembly().Location;
+			fileName = fileName.Remove(fileName.IndexOf("\\HackTheWorld.exe"))+ "\\save.dat";
+			IFormatter f = new BinaryFormatter();
+			Stream s = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+			f.Serialize(s, this);
+			s.Close();
+			
+		}
+
+		internal static Player Load()
+		{
+			string fileName = Assembly.GetExecutingAssembly().Location;
+			fileName = fileName.Remove(fileName.IndexOf("\\HackTheWorld.exe"))+ "\\save.dat";
+			IFormatter f = new BinaryFormatter();
+			Stream s = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
+			Player pToReturn = (Player) f.Deserialize(s);
+			s.Close();
+			return pToReturn;
+		}
+
+		public override string ToString()
+		{
+			StringBuilder output = new StringBuilder();
+			output.AppendFormat("Name: {0}\nGame Difficulty{1}\nAlignment{2}\n", Name, Diff, Align);
+			return output.ToString();
 		}
 	}
 
@@ -83,12 +101,13 @@ namespace HackTheWorld
 			: base(info, context) { }
 	}
 
+	[Serializable]
 	internal class Contact
 	{
 		public string ContactName { get; private set; }
 		public int ContractRank { get; private set; }
 	}
-
+	[Serializable]
 	internal class Skill
 	{
 		public string SkillName { get; private set; }

@@ -113,6 +113,7 @@ namespace HackTheWorld
 					break;
 				case Command.CONTINUE:
 					ExitState();
+					s = new MainGame(ref outputLabel, Player.Load());
 					break;
 				case Command.HELP:
 					displayHelp();
@@ -314,6 +315,7 @@ namespace HackTheWorld
 		HARD
 	}
 
+
 	internal class MainGame : State
 	{
 		private Command[] validCommands;
@@ -332,7 +334,7 @@ namespace HackTheWorld
 		
 		public override void EnterState()
 		{
-			
+			outputLabel.writeLine("Entered Main game");
 		}
 
 		public override bool ProcessCommand(string cmd, ref State s)
@@ -340,7 +342,7 @@ namespace HackTheWorld
 			Command c;
 			try
 			{
-				c = parser.ParseCommand(command);
+				c = parser.ParseCommand(cmd);
 			}
 			catch (CommandException e)
 			{
@@ -352,6 +354,10 @@ namespace HackTheWorld
 			{
 				case Command.SAVE:
 					player.Save();
+					break;
+				case Command.VIEW:
+					outputLabel.writeLine(player.ToString());
+					break;
 				case Command.HELP:
 					displayHelp();
 					break;
