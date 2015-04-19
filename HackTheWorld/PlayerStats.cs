@@ -20,6 +20,8 @@ namespace HackTheWorld
 		public List<Contact> CrimCont { get; private set; }
 		public List<Contact> BusCont { get; private set; }
 		public Skill[] Skills { get; private set; }
+		public int day { get; private set; }
+		public int month { get; private set; }
 		private Random rng;
 
 		public Player(string name, Difficulty d)
