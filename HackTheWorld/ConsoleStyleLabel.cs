@@ -13,11 +13,13 @@ namespace HackTheWorld
 {
 	class ConsoleStyleLabel : Label
 	{
+		private int preservedLine;
 		public int numLines { get; private set; }
 		public int maxLines { get; private set; }
 		
 		public ConsoleStyleLabel() : base()
 		{
+			preservedLine = 0;
 			numLines = 0;
 			maxLines = 25;
 		}
@@ -42,7 +44,8 @@ namespace HackTheWorld
 
 		private void deleteTopLine()
 		{
-			var t = this.Text.Split(Environment.NewLine.ToCharArray(),StringSplitOptions.RemoveEmptyEntries).Skip(1);
+			List<string> t = this.Text.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+			t.RemoveAt(preservedLine);
 			this.Text = string.Join(Environment.NewLine, t);
 			this.Text += Environment.NewLine.ToString();
 			numLines = t.Count();
@@ -86,6 +89,12 @@ namespace HackTheWorld
 		{
 			this.Text = "";
 			numLines = 0;
+			preservedLine = 0;
+		}
+
+		internal void preserveLines(int p)
+		{
+			preservedLine = p;
 		}
 	}
 }
