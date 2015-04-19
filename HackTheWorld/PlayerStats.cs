@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
 namespace HackTheWorld
 {
+	[Serializable]
 	internal class Player
 	{
 		public string Name { get; private set; }
+		public Difficulty Diff { get; set; }
 		public Alignment Align { get; private set; }
 		public List<Contact> GovCont { get; private set; }
 		public List<Contact> CrimCont { get; private set; }
@@ -16,9 +21,10 @@ namespace HackTheWorld
 		public Skill[] Skills { get; private set; }
 		private Random rng;
 
-		public Player(string name)
+		public Player(string name, Difficulty d)
 		{
 			Name = name;
+			Diff = d;
 			Align = Alignment.GREYHAT;
 			GovCont = new List<Contact>();
 			CrimCont = new List<Contact>();
@@ -49,7 +55,19 @@ namespace HackTheWorld
 
 		private void initSkills()
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
+		}
+
+		internal void Save()
+		{
+			SaveFileDialog sf = new SaveFileDialog();
+			if (sf.ShowDialog() == DialogResult.OK)
+			{
+				IFormatter f = new BinaryFormatter();
+				Stream s = new FileStream(sf.FileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+				f.Serialize(s, this);
+				s.Close();
+			}
 		}
 	}
 
