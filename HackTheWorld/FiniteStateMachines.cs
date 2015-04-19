@@ -326,7 +326,7 @@ namespace HackTheWorld
 		public MainGame(ref ConsoleStyleLabel label, Player p)
 		{
 			outputLabel = label;
-			validCommands = new Command[] {Command.STATISTICS, Command.VIEW, Command.HELP, Command.SAVE};
+			validCommands = new Command[] {Command.STATISTICS,Command.SHOW, Command.VIEW, Command.HELP, Command.SAVE};
 			parser = new CommandParser(validCommands);
 			player = p;
 			EnterState();
@@ -334,7 +334,16 @@ namespace HackTheWorld
 		
 		public override void EnterState()
 		{
-			outputLabel.writeLine("Entered Main game");
+			writeStatus();
+			outputLabel.preserveLines(4);
+		}
+
+		private void writeStatus()
+		{
+			outputLabel.Clear();
+			StringBuilder t = new StringBuilder();
+			t.AppendFormat("Name: {0}     Date: {1}/{2}", player.Name, player.day, player.month);
+			outputLabel.writeLine(t.ToString());
 		}
 
 		public override bool ProcessCommand(string cmd, ref State s)
@@ -355,6 +364,7 @@ namespace HackTheWorld
 				case Command.SAVE:
 					player.Save();
 					break;
+				case Command.SHOW:
 				case Command.VIEW:
 					outputLabel.writeLine(player.ToString());
 					break;
